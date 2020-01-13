@@ -72,10 +72,6 @@ class PatternGenerator:
 #spin reversal
 #max spin speed
 
-#fire rate
-#bullet speed
-#bullet acceleration
-
 #object width
 #object height
 #x offset
@@ -90,13 +86,8 @@ def main():
 
     # Define the colors we will use in RGB format
     BLACK = (  0,   0,   0)
-    WHITE = (255, 255, 255)
-    BLUE =  (  0,   0, 255)
-    GREEN = (  0, 255,   0)
-    RED =   (255,   0,   0)
 
     pygame.display.set_caption("Bullet Pattern Test")
-     
     screen = pygame.display.set_mode((500,500))
      
     running = True
@@ -104,61 +95,23 @@ def main():
 
     gen = PatternGenerator(475, 250)
 
+    # Game loop
     while running:
 
         clock.tick(60)
 
+        # Events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
-
+        # Updates
         gen.update()
 
-        # Clear the screen and set the screen background
+
+        # Draw
         screen.fill(BLACK)
-
         gen.draw(screen)
-
-        # Draw on the screen a GREEN line from (0,0) to (50.75) 
-        # 5 pixels wide.
-        #pygame.draw.line(screen, GREEN, [0, 0], [50,30], 5)
-    
-        # Draw on the screen a GREEN line from (0,0) to (50.75) 
-        # 5 pixels wide.
-        #pygame.draw.lines(screen, WHITE, False, [[0, 80], [50, 90], [200, 80], [220, 30]], 5)
-        
-        # Draw on the screen a GREEN line from (0,0) to (50.75) 
-        # 5 pixels wide.
-        #pygame.draw.aaline(screen, GREEN, [0, 50],[50, 80], True)
-
-        # Draw a rectangle outline
-        #pygame.draw.rect(screen, WHITE, [75, 10, 50, 20], 2)
-        
-        # Draw a solid rectangle
-        #pygame.draw.rect(screen, WHITE, [150, 10, 50, 20])
-        
-        # Draw an ellipse outline, using a rectangle as the outside boundaries
-        #pygame.draw.ellipse(screen, RED, [225, 10, 50, 20], 2) 
-
-        # Draw an solid ellipse, using a rectangle as the outside boundaries
-        #pygame.draw.ellipse(screen, RED, [300, 10, 50, 20]) 
-    
-        # This draws a triangle using the polygon command
-        #pygame.draw.polygon(screen, WHITE, [[100, 100], [0, 200], [200, 200]], 5)
-    
-        # Draw an arc as part of an ellipse. 
-        # Use radians to determine what angle to draw.
-        #pygame.draw.arc(screen, WHITE,[210, 75, 150, 125], 0, pi/2, 2)
-        #pygame.draw.arc(screen, GREEN,[210, 75, 150, 125], pi/2, pi, 2)
-        #pygame.draw.arc(screen, BLUE, [210, 75, 150, 125], pi,3*pi/2, 2)
-        #pygame.draw.arc(screen, RED,  [210, 75, 150, 125], 3*pi/2, 2*pi, 2)
-        
-        # Draw a circle
-        #pygame.draw.circle(screen, BLUE, [60, 250], 40)
-        
-        # Go ahead and update the screen with what we've drawn.
-        # This MUST happen after all the other drawing commands.
         pygame.display.flip()
      
 if __name__=="__main__":
