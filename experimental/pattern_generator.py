@@ -2,6 +2,28 @@ import pygame
 import math
 import random
 
+class Player:
+    def __init__(self, x, y):
+        r = random.randint(0, 255)
+        g = random.randint(0, 255)
+        b = random.randint(0, 255)
+        self.colour = (r, g, b)
+        self.x = x
+        self.y = y
+        self.width = 20
+        self.height = 16
+        self.speed = 5
+
+    def move(self, direction):
+        self.y += direction * self.speed
+        if self.y > 480:
+            self.y = 480
+        if self.y < 0:
+            self.y = 0
+
+    def draw(self, screen):
+        pygame.draw.rect(screen, self.colour, [self.x, self.y, self.width, self.height])
+
 class Bullet:
     def __init__(self, x, y, speed):
         self.colour = ()
@@ -34,7 +56,7 @@ class PatternGenerator:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.bullet_speed = 2
+        self.bullet_speed = 4
         self.bullets = []
         self.fire_rate = 20
         self.fire_rate_counter = 0
@@ -94,6 +116,8 @@ def main():
     clock = pygame.time.Clock()
 
     gen = PatternGenerator(475, 250)
+    p = Player(25, 225)
+    p_move = 0
 
     # Game loop
     while running:
@@ -104,14 +128,24 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    p_move = -1
+                if event.key == pygame.K_DOWN:
+                    p_move = 1
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                    p_move = 0
 
         # Updates
         gen.update()
+        p.move(p_move)
 
 
         # Draw
         screen.fill(BLACK)
         gen.draw(screen)
+        p.draw(screen)
         pygame.display.flip()
      
 if __name__=="__main__":
