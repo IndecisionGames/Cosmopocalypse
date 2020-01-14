@@ -14,12 +14,19 @@ class Player:
         self.height = 16
         self.speed = 5
 
-    def move(self, direction):
-        self.y += direction * self.speed
+    def move(self, vertical=0, horizontal=0):
+        self.y += vertical * self.speed
         if self.y > 480:
             self.y = 480
         if self.y < 0:
             self.y = 0
+
+        # Comment below section to disable horizontal movement
+        self.x += horizontal * self.speed
+        if self.x > 400:
+            self.x = 400
+        if self.x < 20:
+            self.x = 20
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.colour, [self.x, self.y, self.width, self.height])
@@ -117,7 +124,8 @@ def main():
 
     gen = PatternGenerator(475, 250)
     p = Player(25, 225)
-    p_move = 0
+    p_hmove = 0
+    p_vmove = 0
 
     # Game loop
     while running:
@@ -128,18 +136,25 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    p_move = -1
-                if event.key == pygame.K_DOWN:
-                    p_move = 1
-            elif event.type == pygame.KEYUP:
-                if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-                    p_move = 0
+
+        keys = pygame.key.get_pressed()  #checking pressed keys
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
+            p_vmove = -1
+        elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
+            p_vmove = 1
+        else:
+            p_vmove = 0
+
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            p_hmove = -1
+        elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            p_hmove = 1
+        else:
+            p_hmove = 0
 
         # Updates
         gen.update()
-        p.move(p_move)
+        p.move(p_vmove, p_hmove)
 
 
         # Draw
