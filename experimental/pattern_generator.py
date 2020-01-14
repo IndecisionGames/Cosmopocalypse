@@ -11,7 +11,7 @@ class Player:
         self.x = x
         self.y = y
         self.width = 20
-        self.height = 16
+        self.height = 15
         self.speed = 5
 
     def move(self, vertical=0, horizontal=0):
@@ -47,9 +47,17 @@ class Bullet:
         b = random.randint(0, 255)
         self.colour = (r, g, b)
 
+    def playerBullets(self):
+        self.colour = (255, 201, 34)
+        self.xr = 10
+        self.yr = 4
+        self.speed *= 3
+
     def update(self):
-        self.x -= self.speed
+        self.x += self.speed
         if self.x < 0:
+            self.alive = False
+        if self.x > 500:
             self.alive = False
 
     def isAlive(self):
@@ -60,19 +68,22 @@ class Bullet:
 
 
 class PatternGenerator:
-    def __init__(self, x, y):
+    def __init__(self, x, y, playerGuns):
         self.x = x
         self.y = y
         self.bullet_speed = 4
         self.bullets = []
         self.fire_rate = 20
         self.fire_rate_counter = 0
+        self.playerGuns = playerGuns
 
     def update(self):
-        
         if self.fire_rate_counter == 0:
             b = Bullet(self.x, self.y, self.bullet_speed)
-            b.randomiseColour()
+            if self.playerGuns:
+                b.playerBullets()
+            else:
+                b.randomiseColour()
             self.bullets.append(b)
             self.fire_rate_counter = self.fire_rate
         else:
@@ -83,6 +94,13 @@ class PatternGenerator:
             if not bullet.isAlive():
                 self.bullets.remove(bullet)
         
+    def updateLocation(self, x, y):
+        self.x = x
+        self.y = y
+    
+    def updateDirection(self, d):
+        self.bullet_speed *= d
+
     def draw(self, screen):
         for bullet in self.bullets:
             bullet.draw(screen)
@@ -122,10 +140,13 @@ def main():
     running = True
     clock = pygame.time.Clock()
 
-    gen = PatternGenerator(475, 250)
+    gen = PatternGenerator(475, 250, False)
+    gen.updateDirection(-1)
     p = Player(25, 225)
     p_hmove = 0
     p_vmove = 0
+    lgun = PatternGenerator(35, 223, True)
+    rgun = PatternGenerator(35, 238, True)
 
     # Game loop
     while running:
@@ -155,12 +176,18 @@ def main():
         # Updates
         gen.update()
         p.move(p_vmove, p_hmove)
+        lgun.updateLocation(p.x + 10, p.y - 2)
+        rgun.updateLocation(p.x + 10, p.y + 13)
+        lgun.update()
+        rgun.update()
 
 
         # Draw
         screen.fill(BLACK)
         gen.draw(screen)
         p.draw(screen)
+        lgun.draw(screen)
+        rgun.draw(screen)
         pygame.display.flip()
      
 if __name__=="__main__":
