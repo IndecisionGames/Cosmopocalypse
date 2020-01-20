@@ -1,18 +1,17 @@
 import pygame
 import math
 import random
+import resources
 
-class Player:
-    def __init__(self, x, y):
-        r = random.randint(0, 255)
-        g = random.randint(0, 255)
-        b = random.randint(0, 255)
-        self.colour = (r, g, b)
+# https://github.com/sahithi-rv/donkey_kong/blob/600a1d115dae6d28d0e7815eee12c8a2dba40ac8/DonkeyKong/sprites.py
+class Player(pygame.sprite.Sprite):
+    def __init__(self, img, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = img
+        self.rect = self.image.get_rect()
+        self.speed = 5
         self.x = x
         self.y = y
-        self.width = 20
-        self.height = 15
-        self.speed = 5
 
     def move(self, vertical=0, horizontal=0):
         self.y += vertical * self.speed
@@ -28,8 +27,14 @@ class Player:
         if self.x < 20:
             self.x = 20
 
+    def gunPositions(self):
+        pos1 = [self.x + self.rect.width, self.y + self.rect.height]
+        pos2 = [self.x + self.rect.width, self.y + self.rect.height/2]
+
+        return [pos1, pos2]
+
     def draw(self, screen):
-        pygame.draw.rect(screen, self.colour, [self.x, self.y, self.width, self.height])
+        screen.blit(self.image, (self.x, self.y))
 
 class Bullet:
     def __init__(self, x, y, speed):
@@ -101,6 +106,9 @@ class PatternGenerator:
     def updateDirection(self, d):
         self.bullet_speed *= d
 
+    def updateFireRate(self, n):
+        self.fire_rate = n
+
     def draw(self, screen):
         for bullet in self.bullets:
             bullet.draw(screen)
@@ -142,11 +150,13 @@ def main():
 
     gen = PatternGenerator(475, 250, False)
     gen.updateDirection(-1)
-    p = Player(25, 225)
+    p = Player(resources.player, 25, 225)
     p_hmove = 0
     p_vmove = 0
-    lgun = PatternGenerator(35, 223, True)
-    rgun = PatternGenerator(35, 238, True)
+    lgun = PatternGenerator(p.gunPositions()[0][0], p.gunPositions()[0][1], True)
+    rgun = PatternGenerator(p.gunPositions()[1][0], p.gunPositions()[1][1], True)
+    lgun.updateFireRate(3)
+    rgun.updateFireRate(3)
 
     # Game loop
     while running:
@@ -176,11 +186,10 @@ def main():
         # Updates
         gen.update()
         p.move(p_vmove, p_hmove)
-        lgun.updateLocation(p.x + 10, p.y - 2)
-        rgun.updateLocation(p.x + 10, p.y + 13)
+        lgun.updateLocation(p.gunPositions()[0][0], p.gunPositions()[0][1])
+        rgun.updateLocation(p.gunPositions()[1][0], p.gunPositions()[1][1])
         lgun.update()
         rgun.update()
-
 
         # Draw
         screen.fill(BLACK)
