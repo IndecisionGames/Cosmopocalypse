@@ -21,7 +21,7 @@ def run_game():
 
 
     #set opening scene !!!!! set to splash screen eventually
-    active_scene = Levels.TitleScene()
+    active_scene = Levels.SplashScreen()
 
     #this is the game loop
     while active_scene is not None:
@@ -39,7 +39,7 @@ def run_game():
         #arg = max fps
         clock.tick(60)
 
-        print("fps", clock.get_fps())
+        #print("fps", clock.get_fps())
 
 
 

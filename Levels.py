@@ -1,18 +1,7 @@
 import pygame
 import cosmopocalypse_constants as cc
 import cosmopocalypse_classes as ccl
-from pygame.locals import (
-    RLEACCEL,
-    K_SPACE,
-    K_UP, K_w,
-    K_DOWN, K_s,
-    K_LEFT, K_a,
-    K_RIGHT, K_d,
-    K_e,
-    K_ESCAPE,
-    KEYDOWN,
-    QUIT,
-)
+from pygame.locals import *
 
 class SceneBase():
     #base class for each game scene
@@ -34,46 +23,57 @@ class SceneBase():
 class SplashScreen(SceneBase):
     def __init__(self):
         SceneBase.__init__(self)
-        self.next = next
+        self.next = self
         self.count = 0
+        self.background = ccl.Background("Pikachu_Splash.jpg")
 
     def ProcessInput(self):
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == K_e:
                     self.SwitchScene(TitleScene())
-
+            if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                self.SwitchScene(TitleScene())
+            if event.type == pygame.QUIT:
+                self.next = None
     def Update(self, screen):
         self.count += 1
         if self.count > 600:
-            self.SwitchScene(TitleScene)
+            self.SwitchScene(TitleScene())
 
     def Render(self, screen):
         screen.fill((0, 0, 0))
+        screen.blit(self.background.image, self.background.rect)
 
 class TitleScene(SceneBase):
     def __init__(self):
         SceneBase.__init__(self)
         self.next = self
-        self.play_button = ccl.button(cc.SCREEN_WIDTH // 2, cc.SCREEN_HEIGHT // 2, "PlayButton.png")
+        self.background = ccl.Background("Background1.png")
+        self.play_button = ccl.button(cc.SCREEN_WIDTH // 2 - 75, cc.SCREEN_HEIGHT // 2 - 100, "PlayButton.png")
 
     def ProcessInput(self):
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == K_e:
                     self.SwitchScene(LevelOne())
-        mouse = pygame.mouse.get_pos()
-        #play button
-        if mouse[0] >= self.play_button.rect.x and mouse[0] <= self.play_button.rect.x + 100:
-            if mouse[1] >= self.play_button.rect.y and mouse[1] <= self.play_button.rect.y + 100:
-                self.SwitchScene(LevelOne)
+            if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                mouse = pygame.mouse.get_pos()
+                print(mouse)
+                if self.play_button.rect.collidepoint(mouse):
+                    #print(mouse)
+                    self.SwitchScene(LevelOne()) #issue is here
+            if event.type == pygame.QUIT:
+                self.next = None
 
     def Update(self, screen):
         pass
 
     def Render(self, screen):
         screen.fill((0, 0, 0))
+        screen.blit(self.background.image, self.background.rect)
         screen.blit(self.play_button.image, self.play_button.rect)
+        ccl.draw_text(screen, "PLAY", 50, cc.SCREEN_WIDTH // 2, cc.SCREEN_HEIGHT // 2 - 85, cc.WHITE)
         ccl.draw_text(screen, "COSMOPOCALYPSE", 80, cc.SCREEN_WIDTH / 2, 10, cc.RED)
 
 class LevelOne(SceneBase):
@@ -89,7 +89,7 @@ class LevelOne(SceneBase):
         self.ships = pygame.sprite.Group()
         self.boss = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
-        self.background = ccl.Background()
+        self.background = ccl.Background("Background1.png")
         self.player = ccl.Player()
         self.all_sprites.add(self.background)
         self.all_sprites.add(self.player)
@@ -107,12 +107,12 @@ class LevelOne(SceneBase):
                     bullet.rect.y = self.player.rect.y + 17
                     self.projectiles.add(bullet)
                     self.all_sprites.add(bullet)
-
-
             elif event.type == self.ADDENEMY:
                 new_enemy = ccl.Asteroid()
                 self.asteroids.add(new_enemy)
                 self.all_sprites.add(new_enemy)
+            if event.type == pygame.QUIT:
+                self.next = None
 
     def Update(self, screen):
         #FIX:, use list.len() change formula

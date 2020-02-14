@@ -18,9 +18,9 @@ from pygame.locals import (
 
 
 class Background(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, image):
         super(Background, self).__init__()
-        self.image = pygame.image.load(os.path.join(cc.BACKGROUND_PATH, "Background1.png")).convert()
+        self.image = pygame.image.load(os.path.join(cc.BACKGROUND_PATH, image)).convert()
         self.image.set_colorkey((cc.BLACK), RLEACCEL)
         self.rect = self.image.get_rect()
 
@@ -174,10 +174,8 @@ class button(pygame.sprite.Sprite):
         self.image.set_colorkey((cc.BLACK), RLEACCEL)
         self.rect = self.image.get_rect(topleft=(x, y))
 
-
-
-
-
+    def Update(self):
+        pass
 
 def draw_text(surf, text, size, x, y, colour):
     font = pygame.font.Font(cc.TITLE_FONT, size)
